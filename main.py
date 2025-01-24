@@ -55,11 +55,11 @@ def process_csv_file(csv_file_path, printer_name):
             total_rows = sum(1 for row in csv_reader)
             csvfile.seek(0)
             for i, row in enumerate(csv_reader):
-                if len(row) != 3:
+                if len(row) != 4:
                     logging.error(f"Dados inválidos no CSV: {row}")
                     continue
-                branch, turn, typeTonner = row
-                zpl_model = ZplModel(turn=turn, typeTonner=typeTonner, branch=str(branch))
+                branch, turn, typeTonner, ramp = row
+                zpl_model = ZplModel(turn=turn, typeTonner=typeTonner, branch=str(branch), ramp=ramp)
                 zpl_file_path = os.path.join(LOG_DIR, f'output_{branch}.txt')
                 with ZplFile(zpl_file_path) as zpl_file:
                     zpl_file.generate_zpl_label(zpl_model)
@@ -121,10 +121,11 @@ label.pack(pady=5)
 button = tk.Button(frame, text="Importar CSV", command=select_csv_file)
 button.pack(pady=5)
 
-tree = ttk.Treeview(frame, columns=("Branch", "Turn", "TypeTonner"), show='headings')
+tree = ttk.Treeview(frame, columns=("Branch", "Turn", "TypeTonner", "Ramp"), show='headings')
 tree.heading("Branch", text="Filial")
 tree.heading("Turn", text="Turno")
 tree.heading("TypeTonner", text="Tonner")
+tree.heading("Ramp", text="Rampa")
 tree.pack(pady=5)
 
 printer_label = tk.Label(frame, text="Nome da Impressora:")

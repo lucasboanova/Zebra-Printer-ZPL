@@ -36,6 +36,8 @@ class ZplFile():
             f"^FT366,371^A0N,56,55^FH\\^FD{zplModel.turn}^FS\n"
             "^FT181,471^A0N,56,55^FH\\^FDTipo: ^FS\n"
             f"^FT366,471^A0N,56,55^FH\\^FD{zplModel.typeTonner}^FS\n"
+            "^FT181,551^A0N,56,55^FH\\^FDRampa: ^FS\n"
+            f"^FT366,551^A0N,56,55^FH\\^FD{zplModel.ramp}^FS\n"
             "^FT203,689^A0N,56,55^FH\\^FDA\\1FC: Resp. Filial^FS\n"
             "^FO32,46^GB732,711,8^FS\n"
             "^FO41,573^GB717,0,12^FS\n"
