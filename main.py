@@ -10,18 +10,30 @@ from tkinter import filedialog, messagebox, ttk
 import shutil
 import json
 
-logging.basicConfig(level=logging.INFO, filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+LOG_DIR = os.path.join(os.path.expanduser("~"), "PrinterZPL")
+CSV_DIR = os.path.join(LOG_DIR, "csvFile")
+
+def create_directories():
+    os.makedirs(LOG_DIR, exist_ok=True)
+    os.makedirs(CSV_DIR, exist_ok=True)
+
+# Create directories before configuring logging
+create_directories()
+
+logging.basicConfig(level=logging.INFO, filename=os.path.join(LOG_DIR, 'app.log'), filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 CONFIG_FILE = 'config.json'
 
 def load_config():
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as file:
+    config_path = os.path.join(LOG_DIR, CONFIG_FILE)
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as file:
             return json.load(file)
     return {}
 
 def save_config(config):
-    with open(CONFIG_FILE, 'w') as file:
+    config_path = os.path.join(LOG_DIR, CONFIG_FILE)
+    with open(config_path, 'w') as file:
         json.dump(config, file)
 
 def resource_path(relative_path):
@@ -48,7 +60,7 @@ def process_csv_file(csv_file_path, printer_name):
                     continue
                 branch, turn, typeTonner = row
                 zpl_model = ZplModel(turn=turn, typeTonner=typeTonner, branch=str(branch))
-                zpl_file_path = f'output_{branch}.txt'
+                zpl_file_path = os.path.join(LOG_DIR, f'output_{branch}.txt')
                 with ZplFile(zpl_file_path) as zpl_file:
                     zpl_file.generate_zpl_label(zpl_model)
                     zebra_printer.output(zpl_file.filename)
@@ -64,7 +76,7 @@ def process_csv_file(csv_file_path, printer_name):
 def select_csv_file():
     csv_file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
     if csv_file_path:
-        standard_csv_path = resource_path('csvFile/tonner.csv')
+        standard_csv_path = os.path.join(CSV_DIR, 'tonner.csv')
         shutil.copyfile(csv_file_path, standard_csv_path)
         display_csv_data(standard_csv_path)
         config['csv_file_path'] = csv_file_path
@@ -85,7 +97,9 @@ def print_labels():
         return
     config['printer_name'] = printer_name
     save_config(config)
-    process_csv_file(resource_path('csvFile/tonner.csv'), printer_name)
+    csv_file_path = os.path.join(CSV_DIR, 'tonner.csv')
+    logging.info(f"CSV file path: {csv_file_path}")
+    process_csv_file(csv_file_path, printer_name)
 
 root = tk.Tk()
 root.title("Impressão de etiquetas ZPL")
