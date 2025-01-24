@@ -63,7 +63,13 @@ def process_csv_file(csv_file_path, printer_name):
                 zpl_file_path = os.path.join(LOG_DIR, f'output_{branch}.txt')
                 with ZplFile(zpl_file_path) as zpl_file:
                     zpl_file.generate_zpl_label(zpl_model)
-                    zebra_printer.output(zpl_file.filename)
+                
+                # Enviar o arquivo ZPL para a impressora
+                with open(zpl_file_path, 'r', encoding='utf-8') as file:
+                    zpl_content = file.read()
+                    zebra_printer.output(zpl_content)
+                    logging.info(f"Sent ZPL content to printer: {zpl_content}")
+
                 progress_var.set((i + 1) / total_rows * 100)
                 root.update_idletasks()
 

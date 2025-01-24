@@ -1,16 +1,22 @@
 from models.modelZpl import ZplModel
-
+import logging
 
 class ZplFile():
+    """Classe para manipulação de arquivos ZPL."""
     def __init__(self, filename):
         self.filename = filename
         self.file = open(filename, 'w', encoding='utf-8')
+        logging.info(f"Opened file for writing: {filename}")
 
     def write(self, data):
+        """Escreve dados no arquivo."""
         self.file.write(data)
+        logging.info(f"Wrote data to file: {data}")
 
     def close(self):
+        """Fecha o arquivo."""
         self.file.close()
+        logging.info(f"Closed file: {self.filename}")
 
     def __enter__(self):
         return self
@@ -19,6 +25,7 @@ class ZplFile():
         self.close()
 
     def generate_zpl_label(self, zplModel: ZplModel):
+        """Gera a etiqueta ZPL com base no modelo fornecido."""
         zpl = (
             "^XA\n"
             "^FO32,288^GFA,05888,05888,00092,:Z64:\n"
@@ -36,3 +43,5 @@ class ZplFile():
             "^PQ1,0,1,Y^XZ"
         )
         self.write(zpl)
+        logging.debug(f"Generated ZPL label: {zpl}")
+        return zpl
